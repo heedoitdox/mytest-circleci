@@ -1,10 +1,7 @@
 import json
 
-def respond(msg, status=200):
+def lambda_handler(event, context) :
     return {
-        'statusCode': str(status),
-        'body': msg
+        'statusCode' : 200,
+        'body' : json.dumps('Hello Lambda!')
     }
-
-def lambda_handler(event, context):        
-    return respond("hello world", status=200)
