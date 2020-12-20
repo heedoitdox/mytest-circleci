@@ -14,12 +14,12 @@ jobs:
       - run:
           name: Test
           command: |
-            python lambda.py
+            python lambda_function.py
       - run:
           name: Bundle
           command: |
             mkdir output
-            zip -r output/bundle.zip lambda.py deps/*
+            zip -r output/bundle.zip lambda_function.py deps/*
       - persist_to_workspace:
           root: output
           paths:
