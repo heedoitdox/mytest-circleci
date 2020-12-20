@@ -1,26 +1,55 @@
-# Golang CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-go/ for more details
 version: 2
 jobs:
+
   build:
     docker:
-      # specify the version
-      - image: circleci/golang:1.9
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
-
-    #### TEMPLATE_NOTE: go expects specific checkout path representing url
-    #### expecting it in the form of
-    ####   /go/src/github.com/circleci/go-tool
-    ####   /go/src/bitbucket.org/circleci/go-tool
-    working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
+      - image: circleci/python:3.8
     steps:
       - checkout
+      - run:
+          name: Package Python Lambda Zip
+          command: |
+            mkdir deps && touch deps/__init__.py
+            pip install requests -t deps
+      - run:
+          name: Test
+          command: |
+            python lambda.py
+      - run:
+          name: Bundle
+          command: |
+            mkdir output
+            zip -r output/bundle.zip lambda.py deps/*
+      - persist_to_workspace:
+          root: output
+          paths:
+            - bundle.zip
 
-      # specify any bash command here prefixed with `run: `
-      - run: go get -v -t -d ./...
-      - run: go test -v ./...
+  deploy:
+    docker:
+      - image: circleci/python:3.8
+    steps: 
+      - attach_workspace:
+          at: output
+      - run:
+          name: Install awscli
+          command: sudo pip install awscli
+      - run:
+          name: Publish Lambda
+          command: |
+            export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+            export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+            export AWS_DEFAULT_REGION=${AWS_REGION}
+            export FUNCTION_NAME=hello_world
+            aws lambda update-function-code --function-name ${FUNCTION_NAME} --zip-file fileb://output/bundle.zip --publish   
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
