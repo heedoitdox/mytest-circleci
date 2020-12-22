@@ -6,11 +6,12 @@ jobs:
       - image: circleci/python:3.8
     steps:
       - checkout
-      - run:
-          name: Package Python Lambda Zip
-          command: |
-            mkdir deps && touch deps/__init__.py
-            pip install requests -t deps
+      # - run:
+      #     name: Package Python Lambda Zip
+      #     command: |
+      #       mkdir deps && touch deps/__init__.py
+      #       pip install requests -t deps
+      # zip -r output/bundle.zip lambda_function.py deps/*
       - run:
           name: Test
           command: |
@@ -19,7 +20,7 @@ jobs:
           name: Bundle
           command: |
             mkdir output
-            zip -r output/bundle.zip lambda_function.py deps/*
+            zip -r output/bundle.zip lambda_function.py
       - persist_to_workspace:
           root: output
           paths:
@@ -41,7 +42,7 @@ jobs:
             export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
             export AWS_DEFAULT_REGION=${AWS_REGION}
             export FUNCTION_NAME=hello_world
-            aws lambda update-function-code --function-name ${FUNCTION_NAME} --zip-file fileb://output/bundle.zip --publish   
+            aws lambda update-function-code --function-name ${FUNCTION_NAME} --zip-file fileb://output/bundle.zip
 workflows:
   version: 2
   build-deploy:
