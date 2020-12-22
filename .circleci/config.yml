@@ -1,17 +1,11 @@
 version: 2
-jobs:
 
+jobs:
   build:
     docker:
       - image: circleci/python:3.8
     steps:
       - checkout
-      # - run:
-      #     name: Package Python Lambda Zip
-      #     command: |
-      #       mkdir deps && touch deps/__init__.py
-      #       pip install requests -t deps
-      # zip -r output/bundle.zip lambda_function.py deps/*
       - run:
           name: Test
           command: |
