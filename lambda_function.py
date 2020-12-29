@@ -3,12 +3,12 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-endpoint=os.Getenv("DB_HOST")
-username=os.Getenv("DB_USERNAME")
-password=os.Getenv("DB_PASSWORD")
-database_name=os.Getenv("DB_NAME")
+endpoint=os.getenv("DB_HOST")
+username=os.getenv("DB_USERNAME")
+password=os.getenv("DB_PASSWORD")
+database_name=os.getenv("DB_NAME")
 
-connection = pymysql.connect(os.Getenv("DB_HOST"), user=username, passwd=password, db=database_name)
+connection = pymysql.connect(endpoint, user=username, passwd=password, db=database_name)
 
 def lambda_handler(event, context) :
     

@@ -11,7 +11,7 @@ jobs:
           command: |
             mkdir output
             pip3 install -t output -r requirements.txt
-            zip -r output/bundle.zip output lambda_function.py
+            zip -r output/bundle.zip output/* lambda_function.py
       - persist_to_workspace:
           root: output
           paths:
