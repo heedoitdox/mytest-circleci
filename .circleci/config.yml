@@ -13,7 +13,7 @@ jobs:
             mv lambda_function.py output/
             pip3 install -t output -r requirements.txt
             cd output
-            zip bundle.zip ./*
+            zip -r bundle.zip ./*
       - persist_to_workspace:
           root: output
           paths:
